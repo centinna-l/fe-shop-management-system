@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Login from "./Login";
+import Dashboard from "./Dashboard";
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import AddProductPage from "./AddProduct";
+const App = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [token, setToken] = useState("");
 
-function App() {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogin = (token) => {
+    localStorage.setItem("token", token);
+    setLoggedIn(true);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            loggedIn ? (
+              <Navigate to="/dashboard" />
+            ) : (
+              <Login onLogin={handleLogin} />
+            )
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={loggedIn ? <Dashboard /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/add-product"
+          element={loggedIn ? <AddProductPage /> : <Navigate to="/" />}
+        />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
